@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Buku Tamu Desa Cikadu</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+      /* Tema Soft Blue */
+      body { 
+        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); 
+        font-family: 'Inter', sans-serif; 
+        min-height: 100vh;
+        padding: 20px 10px;
+        color: #333;
+      }
+      .card { 
+        border-radius: 16px; 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+        border: none; 
+        background-color: #ffffff;
+      }
+      .icon-header {
+        width: 70px;
+        height: 70px;
+        background-color: #3b82f6; 
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        margin: 0 auto 15px auto;
+        box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+      }
+      .header-title { color: #1d4ed8; font-weight: 700; letter-spacing: -0.5px; }
+      .form-label { font-weight: 600; color: #495057; font-size: 0.9rem; margin-bottom: 0.3rem; }
+      
+      /* Input Styling */
+      .input-group-text {
+        background-color: #f8f9fa;
+        border-right: none;
+        color: #3b82f6; 
+        border-radius: 8px 0 0 8px;
+      }
+      .form-control, .form-select { 
+        border-radius: 0 8px 8px 0; 
+        border-left: none;
+        background-color: #f8f9fa;
+        color: #333;
+        padding: 10px 15px;
+      }
+      .form-control:focus, .form-select:focus {
+        border-color: #3b82f6;
+        box-shadow: none;
+        background-color: #ffffff;
+      }
+      .input-group:focus-within .input-group-text,
+      .input-group:focus-within .form-control,
+      .input-group:focus-within .form-select {
+        border-color: #3b82f6;
+        background-color: #ffffff;
+      }
+      
+      /* Canvas TTD */
+      #canvasTTD {
+        width: 100%;
+        height: 180px;
+        border: 2px dashed #3b82f6;
+        border-radius: 12px;
+        background-color: #f8f9fa;
+        touch-action: none; 
+      }
+      
+      /* Button Submit */
+      .btn-primary { 
+        width: 100%; 
+        border-radius: 8px; 
+        font-weight: 600; 
+        background-color: #3b82f6; 
+        border: none;
+        padding: 12px;
+        transition: all 0.3s;
+      }
+      .btn-primary:hover { background-color: #2563eb; transform: translateY(-1px); }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-6 col-12">
+          
+          <div class="card p-4 mt-2 mb-4">
+            <div class="icon-header">
+              <i class="fa-solid fa-house-chimney"></i>
+            </div>
+            <h4 class="text-center header-title mb-1">Buku Tamu</h4>
+            <p class="text-center text-muted mb-4" style="font-size: 0.9rem;">Kantor Desa Cikadu</p>
+
+            <form id="bukuTamuForm" onsubmit="event.preventDefault(); kirimData();">
+              
+              <div class="mb-3">
+                <label class="form-label">Nama Lengkap</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                  <input type="text" id="nama" class="form-control" required placeholder="Masukkan nama...">
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Asal Instansi / Alamat</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fa-solid fa-building"></i></span>
+                  <input type="text" id="instansi" class="form-control" required placeholder="Contoh: Kecamatan / RT 01...">
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Jabatan (Opsional)</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fa-solid fa-briefcase"></i></span>
+                  <input type="text" id="jabatan" class="form-control" placeholder="Kosongkan jika tidak ada">
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Tujuan / Keperluan</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fa-solid fa-comment-dots"></i></span>
+                  <textarea id="tujuan" class="form-control" rows="2" required placeholder="Tuliskan keperluan..."></textarea>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Ingin Bertemu</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fa-solid fa-users"></i></span>
+                  <select id="bertemu" class="form-select" required>
+                    <option value="" disabled selected>-- Pilih Tujuan --</option>
+                    <option value="Kepala Desa">Kepala Desa</option>
+                    <option value="Sekretaris Desa">Sekretaris Desa</option>
+                    <option value="Kepala Urusan Tata Usaha dan Umum">Kepala Urusan Tata Usaha dan Umum</option>
+                    <option value="Kepala Urusan Keuangan">Kepala Urusan Keuangan</option>
+                    <option value="Kepala Urusan Perencanaan">Kepala Urusan Perencanaan</option>
+                    <option value="Kepala Seksi Pemerintahan">Kepala Seksi Pemerintahan</option>
+                    <option value="Kepala Seksi Pelayanan">Kepala Seksi Pelayanan</option>
+                    <option value="Kepala Seksi Kesejahteraan">Kepala Seksi Kesejahteraan</option>
+                    <option value="Kepala Dusun Cigerenem">Kepala Dusun Cigerenem</option>
+                    <option value="Kepala Dusun Campaka">Kepala Dusun Campaka</option>
+                    <option value="Kepala Dusun Cilaku">Kepala Dusun Cilaku</option>
+                    <option value="Kepala Dusun Karyamukti">Kepala Dusun Karyamukti</option>
+                    <option value="Kepala Dusun Koleberes">Kepala Dusun Koleberes</option>
+                    <option value="Kepala Dusun Camaul">Kepala Dusun Camaul</option>
+                    <option value="Staf Kasi Kesejahteraan">Staf Kasi Kesejahteraan</option>
+                    <option value="Staf Kasi Pemerintahan">Staf Kasi Pemerintahan</option>
+                    <option value="Lainnya">Lainnya</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label d-flex justify-content-between align-items-center">
+                  <span>Tanda Tangan</span>
+                  <button type="button" class="btn btn-sm btn-outline-danger" id="btnHapusTTD" style="font-size: 0.75rem; border-radius: 6px;">
+                    <i class="fa-solid fa-eraser"></i> Ulangi
+                  </button>
+                </label>
+                <canvas id="canvasTTD"></canvas>
+              </div>
+
+              <button type="submit" id="btnSubmit" class="btn btn-primary">
+                <i class="fa-solid fa-paper-plane me-2"></i> Simpan Data
+              </button>
+            </form>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Setup Signature Pad
+      var canvas = document.getElementById('canvasTTD');
+      
+      function resizeCanvas() {
+        var ratio =  Math.max(window.devicePixelRatio || 1, 1);
+        canvas.width = canvas.offsetWidth * ratio;
+        canvas.height = canvas.offsetHeight * ratio;
+        canvas.getContext("2d").scale(ratio, ratio);
+      }
+      window.onresize = resizeCanvas;
+      resizeCanvas();
+
+      var signaturePad = new SignaturePad(canvas, {
+        backgroundColor: 'rgba(255, 255, 255, 0)',
+        penColor: 'rgb(0, 0, 0)'
+      });
+
+      document.getElementById('btnHapusTTD').addEventListener('click', function () {
+        signaturePad.clear();
+      });
+
+      function kirimData() {
+        if (signaturePad.isEmpty()) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Oops...',
+            text: 'Tanda tangan tidak boleh kosong!',
+            confirmButtonColor: '#3b82f6'
+          });
+          return;
+        }
+
+        var btn = document.getElementById("btnSubmit");
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Menyimpan...';
+        btn.disabled = true;
+
+        var dataTTD = signaturePad.toDataURL("image/png");
+
+        var dataTamu = {
+          nama: document.getElementById("nama").value,
+          instansi: document.getElementById("instansi").value,
+          jabatan: document.getElementById("jabatan").value,
+          tujuan: document.getElementById("tujuan").value,
+          bertemu: document.getElementById("bertemu").value,
+          ttd: dataTTD
+        };
+
+        google.script.run
+          .withSuccessHandler(function(response) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Tersimpan!',
+              text: 'Terima kasih, data Anda telah berhasil dicatat.',
+              confirmButtonColor: '#3b82f6',
+              allowOutsideClick: false
+            }).then((result) => {
+              if (result.isConfirmed) {
+                document.getElementById("bukuTamuForm").reset();
+                signaturePad.clear();
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i> Simpan Data';
+                btn.disabled = false;
+                window.scrollTo(0, 0);
+              }
+            });
+          })
+          .simpanData(dataTamu);
+      }
+    </script>
+  </body>
+</html>
